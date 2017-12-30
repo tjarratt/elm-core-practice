@@ -22,51 +22,58 @@ userOnboarding =
             \_ ->
                 whenThePageLoads
                     |> expectToSeePrompt "Please tell us your name"
-        , test "have a textfield to type in their name" <|
-            \_ ->
-                whenThePageLoads
-                    |> expectToHaveInput "#MyName"
-        , test "see their name as they type" <|
-            \_ ->
-                whenThePageLoads
-                    |> enterName "Rachel McPivotal"
-                    |> expectToSee "Hello, Rachel McPivotal !"
-        , test "are prompted to give us their email address too" <|
-            \_ ->
-                whenThePageLoads
-                    |> enterName "Rachel McPivotal"
-                    |> expectToSeePrompt "Please tell us your email address too..."
-        , test "are prompted to create an account once they enter an email address" <|
-            \_ ->
-                whenThePageLoads
-                    |> enterName "Rachel McPivotal"
-                    |> enterEmail "r.mcpivotal@pivotal.io"
-                    |> expectToSeePrompt "Great, you're ready to create your account"
-        , test "can submit their name and email to our backend" <|
-            \_ ->
-                whenThePageLoads
-                    |> usingSpies representingSuccess
-                    |> enterName "Rachel McPivotal"
-                    |> enterEmail "r.mcpivotal@pivotal.io"
-                    |> clickThatButton
-                    |> expectNewAccountRequestWithBody
-                        """{"email":"r.mcpivotal@pivotal.io","name":"Rachel McPivotal"}"""
-        , test "see a message when their account is created" <|
-            \_ ->
-                whenThePageLoads
-                    |> usingSpies representingSuccess
-                    |> enterName "Rachel McPivotal"
-                    |> enterEmail "r.mcpivotal@pivotal.io"
-                    |> clickThatButton
-                    |> expectToSeePrompt "Great ! Thanks for signing up !"
-        , test "see a message when their account cannot be created" <|
-            \_ ->
-                whenThePageLoads
-                    |> usingSpies representingFailure
-                    |> enterName "Rachel McPivotal"
-                    |> enterEmail "r.mcpivotal@pivotal.io"
-                    |> clickThatButton
-                    |> expectToSeePrompt "Whoops. Something went wrong."
+        , skip <|
+            test "have a textfield to type in their name" <|
+                \_ ->
+                    whenThePageLoads
+                        |> expectToHaveInput "#MyName"
+        , skip <|
+            test "see their name as they type" <|
+                \_ ->
+                    whenThePageLoads
+                        |> enterName "Rachel McPivotal"
+                        |> expectToSee "Hello, Rachel McPivotal !"
+        , skip <|
+            test "are prompted to give us their email address too" <|
+                \_ ->
+                    whenThePageLoads
+                        |> enterName "Rachel McPivotal"
+                        |> expectToSeePrompt "Please tell us your email address too..."
+        , skip <|
+            test "are prompted to create an account once they enter an email address" <|
+                \_ ->
+                    whenThePageLoads
+                        |> enterName "Rachel McPivotal"
+                        |> enterEmail "r.mcpivotal@pivotal.io"
+                        |> expectToSeePrompt "Great, you're ready to create your account"
+        , skip <|
+            test "can submit their name and email to our backend" <|
+                \_ ->
+                    whenThePageLoads
+                        |> usingSpies representingSuccess
+                        |> enterName "Rachel McPivotal"
+                        |> enterEmail "r.mcpivotal@pivotal.io"
+                        |> clickThatButton
+                        |> expectNewAccountRequestWithBody
+                            """{"email":"r.mcpivotal@pivotal.io","name":"Rachel McPivotal"}"""
+        , skip <|
+            test "see a message when their account is created" <|
+                \_ ->
+                    whenThePageLoads
+                        |> usingSpies representingSuccess
+                        |> enterName "Rachel McPivotal"
+                        |> enterEmail "r.mcpivotal@pivotal.io"
+                        |> clickThatButton
+                        |> expectToSeePrompt "Great ! Thanks for signing up !"
+        , skip <|
+            test "see a message when their account cannot be created" <|
+                \_ ->
+                    whenThePageLoads
+                        |> usingSpies representingFailure
+                        |> enterName "Rachel McPivotal"
+                        |> enterEmail "r.mcpivotal@pivotal.io"
+                        |> clickThatButton
+                        |> expectToSeePrompt "Whoops. Something went wrong."
         ]
 
 
