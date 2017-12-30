@@ -11,98 +11,135 @@ import Elmer.Http.Route
 import Elmer.Http.Status
 import Elmer.Http.Stub
 import Elmer.Spy
+import Expect
 import Test exposing (..)
 
 
 userOnboarding : Test
 userOnboarding =
-    describe "Onboarding new users"
-        [ test "They should be prompted to tell us their name" <|
+    describe "new users being onboarded"
+        [ test "are prompted to tell us their name" <|
             \_ ->
-                Elmer.given App.defaultModel App.view App.update
-                    |> Elmer.Html.target "#App #Prompt"
-                    |> Elmer.Html.expect (element <| hasText "Please tell us your name")
-        , test "They should have a textfield to type in their name" <|
+                whenThePageLoads
+                    |> expectToSeePrompt "Please tell us your name"
+        , test "have a textfield to type in their name" <|
             \_ ->
-                Elmer.given App.defaultModel App.view App.update
-                    |> Elmer.Html.target "#App #MyName"
-                    |> Elmer.Html.expect elementExists
-        , test "They should see their name as they type" <|
+                whenThePageLoads
+                    |> expectToHaveInput "#MyName"
+        , test "see their name as they type" <|
             \_ ->
-                Elmer.given App.defaultModel App.view App.update
-                    |> Elmer.Html.target "#App #MyName"
-                    |> Elmer.Html.Event.input "Rachel McPivotal"
-                    |> Elmer.Html.target "#App"
-                    |> Elmer.Html.expect (element <| hasText "Hello, Rachel McPivotal !")
-        , test "They should be prompted to give us their email address too" <|
+                whenThePageLoads
+                    |> enterName "Rachel McPivotal"
+                    |> expectToSee "Hello, Rachel McPivotal !"
+        , test "are prompted to give us their email address too" <|
             \_ ->
-                Elmer.given App.defaultModel App.view App.update
-                    |> Elmer.Html.target "#App #MyName"
-                    |> Elmer.Html.Event.input "Rachel McPivotal"
-                    |> Elmer.Html.target "#App #Prompt"
-                    |> Elmer.Html.expect (element <| hasText "Please tell us your email address too...")
-        , test "They should be prompted to create an account once they enter an email address" <|
+                whenThePageLoads
+                    |> enterName "Rachel McPivotal"
+                    |> expectToSeePrompt "Please tell us your email address too..."
+        , test "are prompted to create an account once they enter an email address" <|
             \_ ->
-                Elmer.given App.defaultModel App.view App.update
-                    |> Elmer.Html.target "#App #MyName"
-                    |> Elmer.Html.Event.input "Rachel McPivotal"
-                    |> Elmer.Html.target "#App #MyEmail"
-                    |> Elmer.Html.Event.input "r.mcpivotal@pivotal.io"
-                    |> Elmer.Html.target "#App #Prompt"
-                    |> Elmer.Html.expect (element <| hasText "Great, you're ready to create your account")
-        , test "Clicking the submit button sends their name and email to the backend" <|
+                whenThePageLoads
+                    |> enterName "Rachel McPivotal"
+                    |> enterEmail "r.mcpivotal@pivotal.io"
+                    |> expectToSeePrompt "Great, you're ready to create your account"
+        , test "can submit their name and email to our backend" <|
             \_ ->
-                Elmer.given App.defaultModel App.view App.update
-                    |> Elmer.Spy.use [ createAccountSpy ]
-                    |> Elmer.Html.target "#App #MyName"
-                    |> Elmer.Html.Event.input "Rachel McPivotal"
-                    |> Elmer.Html.target "#App #MyEmail"
-                    |> Elmer.Html.Event.input "r.mcpivotal@pivotal.io"
-                    |> Elmer.Html.target "#App button"
-                    |> Elmer.Html.Event.click
-                    |> Elmer.Http.expectThat
-                        (Elmer.Http.Route.post "/api/account")
-                        (Elmer.each <|
-                            hasBody
-                                """{"email":"r.mcpivotal@pivotal.io","name":"Rachel McPivotal"}"""
-                        )
-        , test "They should see a message when their account is created" <|
+                whenThePageLoads
+                    |> usingSpies representingSuccess
+                    |> enterName "Rachel McPivotal"
+                    |> enterEmail "r.mcpivotal@pivotal.io"
+                    |> clickThatButton
+                    |> expectNewAccountRequestWithBody
+                        """{"email":"r.mcpivotal@pivotal.io","name":"Rachel McPivotal"}"""
+        , test "see a message when their account is created" <|
             \_ ->
-                Elmer.given App.defaultModel App.view App.update
-                    |> Elmer.Spy.use [ createAccountSpy ]
-                    |> Elmer.Html.target "#App #MyName"
-                    |> Elmer.Html.Event.input "Rachel McPivotal"
-                    |> Elmer.Html.target "#App #MyEmail"
-                    |> Elmer.Html.Event.input "r.mcpivotal@pivotal.io"
-                    |> Elmer.Html.target "#App button"
-                    |> Elmer.Html.Event.click
-                    |> Elmer.Html.target "#App #Prompt"
-                    |> Elmer.Html.expect (element <| hasText "Great ! Thanks for signing up !")
-        , test "They should see a message when their account cannot be created" <|
+                whenThePageLoads
+                    |> usingSpies representingSuccess
+                    |> enterName "Rachel McPivotal"
+                    |> enterEmail "r.mcpivotal@pivotal.io"
+                    |> clickThatButton
+                    |> expectToSeePrompt "Great ! Thanks for signing up !"
+        , test "see a message when their account cannot be created" <|
             \_ ->
-                Elmer.given App.defaultModel App.view App.update
-                    |> Elmer.Spy.use [ cannotCreateAccountSpy ]
-                    |> Elmer.Html.target "#App #MyName"
-                    |> Elmer.Html.Event.input "Rachel McPivotal"
-                    |> Elmer.Html.target "#App #MyEmail"
-                    |> Elmer.Html.Event.input "r.mcpivotal@pivotal.io"
-                    |> Elmer.Html.target "#App button"
-                    |> Elmer.Html.Event.click
-                    |> Elmer.Html.target "#App #Prompt"
-                    |> Elmer.Html.expect (element <| hasText "Whoops. Something went wrong.")
+                whenThePageLoads
+                    |> usingSpies representingFailure
+                    |> enterName "Rachel McPivotal"
+                    |> enterEmail "r.mcpivotal@pivotal.io"
+                    |> clickThatButton
+                    |> expectToSeePrompt "Whoops. Something went wrong."
         ]
 
 
-createAccountSpy : Elmer.Spy.Spy
-createAccountSpy =
+whenThePageLoads : Elmer.TestState App.Model App.Msg
+whenThePageLoads =
+    Elmer.given App.defaultModel App.view App.update
+
+
+expectToSeePrompt : String -> Elmer.TestState a b -> Expect.Expectation
+expectToSeePrompt text testState =
+    testState
+        |> Elmer.Html.target "#App #Prompt"
+        |> Elmer.Html.expect (element <| hasText text)
+
+
+expectToSee : String -> Elmer.TestState a b -> Expect.Expectation
+expectToSee text testState =
+    testState
+        |> Elmer.Html.target "#App"
+        |> Elmer.Html.expect (element <| hasText text)
+
+
+expectToHaveInput : String -> Elmer.TestState a b -> Expect.Expectation
+expectToHaveInput selector testState =
+    testState
+        |> (Elmer.Html.target <| "#App " ++ selector)
+        |> Elmer.Html.expect elementExists
+
+
+enterName : String -> Elmer.TestState a b -> Elmer.TestState a b
+enterName name testState =
+    testState
+        |> Elmer.Html.target "#App #MyName"
+        |> Elmer.Html.Event.input name
+
+
+enterEmail : String -> Elmer.TestState a b -> Elmer.TestState a b
+enterEmail email testState =
+    testState
+        |> Elmer.Html.target "#App #MyEmail"
+        |> Elmer.Html.Event.input email
+
+
+clickThatButton : Elmer.TestState a b -> Elmer.TestState a b
+clickThatButton testState =
+    testState
+        |> Elmer.Html.target "#App button"
+        |> Elmer.Html.Event.click
+
+
+expectNewAccountRequestWithBody : String -> Elmer.TestState a b -> Expect.Expectation
+expectNewAccountRequestWithBody httpBody testState =
+    testState
+        |> Elmer.Http.expectThat
+            (Elmer.Http.Route.post "/api/account")
+            (Elmer.each <| hasBody httpBody)
+
+
+usingSpies : Elmer.Spy.Spy -> Elmer.TestState a b -> Elmer.TestState a b
+usingSpies spy testState =
+    testState |> Elmer.Spy.use [ spy ]
+
+
+representingSuccess : Elmer.Spy.Spy
+representingSuccess =
     Elmer.Http.serve
         [ Elmer.Http.Stub.for (Elmer.Http.Route.post "/api/account")
             |> Elmer.Http.Stub.withBody """[{"message": "Great ! Thanks for signing up !"}]"""
         ]
 
 
-cannotCreateAccountSpy : Elmer.Spy.Spy
-cannotCreateAccountSpy =
+representingFailure : Elmer.Spy.Spy
+representingFailure =
     Elmer.Http.serve
         [ Elmer.Http.Stub.for (Elmer.Http.Route.post "/api/account")
             |> Elmer.Http.Stub.withStatus Elmer.Http.Status.serverError
