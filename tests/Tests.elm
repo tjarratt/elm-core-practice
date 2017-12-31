@@ -141,7 +141,7 @@ representingSuccess : Elmer.Spy.Spy
 representingSuccess =
     Elmer.Http.serve
         [ Elmer.Http.Stub.for (Elmer.Http.Route.post "/api/account")
-            |> Elmer.Http.Stub.withBody """[{"message": "Great ! Thanks for signing up !"}]"""
+            |> Elmer.Http.Stub.withBody """{"message": "Great ! Thanks for signing up !"}"""
         ]
 
 
