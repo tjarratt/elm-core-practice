@@ -2,6 +2,7 @@ module App exposing (defaultModel, view, update, Model, Msg)
 
 import MyCss
 import Html exposing (Html, text, div, h1, img)
+import Html.Attributes exposing (src)
 import Html.CssHelpers
 
 
