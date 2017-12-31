@@ -1,9 +1,13 @@
 module App exposing (defaultModel, view, update, Model, Msg)
 
 import MyCss
-import Html exposing (Html, text, div, h1, img)
+import Html exposing (Html, text, div, h1, img, input, span, button)
 import Html.Attributes exposing (src)
+import Html.Events exposing (onClick, onInput)
 import Html.CssHelpers
+import Http
+import Json.Decode
+import Json.Encode
 
 
 ---- MODEL ----
