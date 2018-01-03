@@ -49,7 +49,7 @@ userOnboarding =
                     whenThePageLoads
                         |> enterName "Rachel McPivotal"
                         |> enterEmail "r.mcpivotal@pivotal.io"
-                        |> expectToSeePrompt "Great, you're ready to create your account"
+                        |> expectToSeePrompt "Woah, you're ready to create your account !"
                 )
         , skip <|
             test "can submit their name and email to our backend"
@@ -70,7 +70,7 @@ userOnboarding =
                         |> enterName "Rachel McPivotal"
                         |> enterEmail "r.mcpivotal@pivotal.io"
                         |> clickThatButton
-                        |> expectToSeePrompt "Great ! Thanks for signing up !"
+                        |> expectToSeePrompt "Sweetness ! Thanks for signing up !"
                 )
         , skip <|
             test "see a message when their account cannot be created"
