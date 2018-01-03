@@ -18,37 +18,42 @@ import Test exposing (..)
 userOnboarding : Test
 userOnboarding =
     describe "new users being onboarded"
-        [ test "are prompted to tell us their name" <|
-            \_ ->
+        [ test "are prompted to tell us their name"
+            (\_ ->
                 whenThePageLoads
                     |> expectToSeePrompt "Please tell us your name"
+            )
         , skip <|
-            test "have a textfield to type in their name" <|
-                \_ ->
+            test "have a textfield to type in their name"
+                (\_ ->
                     whenThePageLoads
                         |> expectToHaveInput "#MyName"
+                )
         , skip <|
-            test "see their name as they type" <|
-                \_ ->
+            test "see their name as they type"
+                (\_ ->
                     whenThePageLoads
                         |> enterName "Rachel McPivotal"
                         |> expectToSee "Hello, Rachel McPivotal !"
+                )
         , skip <|
-            test "are prompted to give us their email address too" <|
-                \_ ->
+            test "are prompted to give us their email address too"
+                (\_ ->
                     whenThePageLoads
                         |> enterName "Rachel McPivotal"
                         |> expectToSeePrompt "Please tell us your email address too..."
+                )
         , skip <|
-            test "are prompted to create an account once they enter an email address" <|
-                \_ ->
+            test "are prompted to create an account once they enter an email address"
+                (\_ ->
                     whenThePageLoads
                         |> enterName "Rachel McPivotal"
                         |> enterEmail "r.mcpivotal@pivotal.io"
                         |> expectToSeePrompt "Great, you're ready to create your account"
+                )
         , skip <|
-            test "can submit their name and email to our backend" <|
-                \_ ->
+            test "can submit their name and email to our backend"
+                (\_ ->
                     whenThePageLoads
                         |> usingSpies representingSuccess
                         |> enterName "Rachel McPivotal"
@@ -56,24 +61,27 @@ userOnboarding =
                         |> clickThatButton
                         |> expectNewAccountRequestWithBody
                             """{"email":"r.mcpivotal@pivotal.io","name":"Rachel McPivotal"}"""
+                )
         , skip <|
-            test "see a message when their account is created" <|
-                \_ ->
+            test "see a message when their account is created"
+                (\_ ->
                     whenThePageLoads
                         |> usingSpies representingSuccess
                         |> enterName "Rachel McPivotal"
                         |> enterEmail "r.mcpivotal@pivotal.io"
                         |> clickThatButton
                         |> expectToSeePrompt "Great ! Thanks for signing up !"
+                )
         , skip <|
-            test "see a message when their account cannot be created" <|
-                \_ ->
+            test "see a message when their account cannot be created"
+                (\_ ->
                     whenThePageLoads
                         |> usingSpies representingFailure
                         |> enterName "Rachel McPivotal"
                         |> enterEmail "r.mcpivotal@pivotal.io"
                         |> clickThatButton
                         |> expectToSeePrompt "Whoops. Something went wrong."
+                )
         ]
 
 
